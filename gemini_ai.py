@@ -3,6 +3,7 @@ from typing import Optional
 from google import genai
 from google.genai import types
 import dotenv
+from roadmap_dataset import data_dict
 
 dotenv.load_dotenv(".env")
 
@@ -51,7 +52,7 @@ The format you should return is:
         response = self.get_response(prompt)
         return response
 
-    def generate_roadmap(self, description: str, data_dict: dict = None) -> str:
+    def generate_roadmap(self, description: str) -> str:
         # Base examples for few-shot prompting if no data_dict provided
         examples = ""
         
