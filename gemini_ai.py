@@ -42,3 +42,40 @@ def get_gemini_response(prompt: str,
     )
     
     return response.text if response.text else ""
+
+class GeminiWrapper:
+    def __init__(self, model_name: str = "gemini-1.5-flash", api_key: Optional[str] = None):
+        self.model_name = model_name
+        self.api_key = api_key
+        self.gemini = genai.Client(api_key=self.api_key)
+
+
+    def get_response(self, prompt: str) -> str:
+        return get_gemini_response(prompt, model_name=self.model_name, api_key=self.api_key)
+    
+    def get_tech_question(self, job_description: str, previous_questions: list) -> str:
+        prompt = """
+Generate me a question to ask a candidate about the job description and these are the previous questions: {previous_questions}.
+The output should be structured into a json format, the required format is:
+{
+    'question': 'question',
+    'answer': 'answer',
+    topics: []
+}
+"""
+        response = get_gemini_response(prompt, model_name=self.model_name, api_key=self.api_key)
+        return response
+
+    def validate_tech_question_answer(self, question: str, answer: str) -> bool:
+        prompt = """
+Check if the given answer is correct for the following question and give the response in a json format.
+Question: {question}
+Answer: {answer}
+The format you should return is:
+{
+    'correct': True or False
+    'reason': 'reason'
+}
+"""
+        response = get_gemini_response(prompt, model_name=self.model_name, api_key=self.api_key)
+        return response
