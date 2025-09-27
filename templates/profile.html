@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Profile</h2>
+        {% if success %}
+            <p class="success">{{ success }}</p>
+        {% endif %}
+        <form method="POST">
+            <label>Name:</label>
+            <input type="text" name="name" value="{{ profile[5] if profile else '' }}"><br>
+            <label>LinkedIn Username:</label>
+            <input type="text" name="linkedin_username" value="{{ profile[2] if profile else '' }}"><br>
+            <label>GitHub Username:</label>
+            <input type="text" name="github_username" value="{{ profile[3] if profile else '' }}"><br>
+            <label>StackOverflow Username:</label>
+            <input type="text" name="stackoverflow_username" value="{{ profile[4] if profile else '' }}"><br>
+            <label>Skills (comma-separated):</label>
+            <input type="text" name="skills" value="{{ profile[6] if profile else '' }}"><br>
+            <button type="submit">Save Profile</button>
+        </form>
+        <p><a href="/home">Back to Home</a></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome, {{ user }}!</h2>
+        <ul>
+            <li><a href="/upload_resume_page">Upload Resume</a></li>
+            <li><a href="/profile_page">View / Update Profile</a></li>
+            <li><a href="/list_resumes">View Uploaded Resumes</a></li>
+            <li><a href="/analyze_page">Analyze Resume</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </div>
+</body>
+</html>
