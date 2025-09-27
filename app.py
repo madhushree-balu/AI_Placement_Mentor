@@ -1,144 +1,138 @@
-from flask import Flask, request, jsonify, session
+from flask import Flask, render_template, request, redirect, session, url_for
 from werkzeug.utils import secure_filename
 import os
 import handlers  # your handlers.py file
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
-
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Initialize database
 handlers.init_db()
 
-@app.route("/api/signup", methods=["POST"])
-def signup():
-    data = request.json
-    email = data.get("email")
-    password = data.get("password")
 
-    if handlers.add_user(email, password):
-        return jsonify({"success": True, "message": "Signup successful"})
-    else:
-        return jsonify({"success": False, "message": "User already exists"}), 400
+# -------------------- ROUTES FOR PAGES -------------------- #
 
-@app.route("/api/login", methods=["POST"])
-def login():
-    data = request.json
-    email = data.get("email")
-    password = data.get("password")
+@app.route("/")
+def index():
+    if "user" in session:
+        return redirect(url_for("home"))
+    return render_template("index.html", error=None)
 
+@app.route("/signup", methods=["GET", "POST"])
+def signup_page():
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+        if handlers.add_user(email, password):
+            return redirect(url_for("index"))
+        else:
+            return render_template("signup.html", error="User already exists")
+    return render_template("signup.html", error=None)
+
+@app.route("/login", methods=["POST"])
+def login_page():
+    email = request.form.get("email")
+    password = request.form.get("password")
     if handlers.validate_user(email, password):
         session["user"] = email
-        return jsonify({"success": True, "message": "Login successful"})
+        return redirect(url_for("home"))
     else:
-        return jsonify({"success": False, "message": "Invalid credentials"}), 401
+        return render_template("index.html", error="Invalid credentials")
 
-@app.route("/api/logout", methods=["POST"])
-def logout():
+@app.route("/logout")
+def logout_page():
     session.pop("user", None)
-    return jsonify({"success": True, "message": "Logged out"})
+    return redirect(url_for("index"))
 
-@app.route("/api/user", methods=["GET"])
-def get_user():
-    if "user" in session:
-        return jsonify({"loggedIn": True, "email": session["user"]})
-    return jsonify({"loggedIn": False}), 401
-
-# --------- Resume APIs ---------
-@app.route("/api/resume", methods=["POST"])
-def upload_resume():
+@app.route("/home")
+def home():
     if "user" not in session:
-        return jsonify({"success": False, "message": "Not logged in"}), 401
+        return redirect(url_for("index"))
+    return render_template("home.html", user=session["user"])
 
-    if "resume" not in request.files:
-        return jsonify({"success": False, "message": "Resume file required"}), 400
 
-    resume_file = request.files["resume"]
-    category = request.form.get("category", "general")
-    filename = secure_filename(resume_file.filename)
-    path = os.path.join(UPLOAD_FOLDER, filename)
-    resume_file.save(path)
+# -------------------- RESUME ROUTES -------------------- #
 
-    handlers.add_resume(session["user"], filename, category)
+@app.route("/upload_resume_page", methods=["GET", "POST"])
+def upload_resume_page():
+    if "user" not in session:
+        return redirect(url_for("index"))
 
-    return jsonify({"success": True, "message": "Resume uploaded successfully"})
+    if request.method == "POST":
+        if "resume" not in request.files:
+            return render_template("upload_resume.html", error="No file uploaded")
+        resume_file = request.files["resume"]
+        category = request.form.get("category", "general")
+        filename = secure_filename(resume_file.filename)
+        resume_file.save(os.path.join(UPLOAD_FOLDER, filename))
+        handlers.add_resume(session["user"], filename, category)
+        return render_template("upload_resume.html", success="Resume uploaded!")
 
-@app.route("/api/resume", methods=["GET"])
+    return render_template("upload_resume.html", error=None)
+
+
+@app.route("/list_resumes")
 def list_resumes():
     if "user" not in session:
-        return jsonify({"success": False, "message": "Not logged in"}), 401
-
+        return redirect(url_for("index"))
     resumes = handlers.get_resumes(session["user"])
-    resume_list = [{"resume_id": r[0], "file_name": r[2], "category": r[3]} for r in resumes]
-    return jsonify({"success": True, "resumes": resume_list})
+    return render_template("list_resumes.html", resumes=resumes)
 
-# --------- Profile APIs ---------
-@app.route("/api/profile", methods=["POST"])
-def add_update_profile():
+
+# -------------------- PROFILE ROUTES -------------------- #
+
+@app.route("/profile_page", methods=["GET", "POST"])
+def profile_page():
     if "user" not in session:
-        return jsonify({"success": False, "message": "Not logged in"}), 401
+        return redirect(url_for("index"))
 
-    data = request.json
-    linkedin = data.get("linkedin_username")
-    github = data.get("github_username")
-    stackoverflow = data.get("stackoverflow_username")
-    name = data.get("name")
-    skills = data.get("skills")  # comma-separated string
-
-    handlers.add_or_update_profile(session["user"], linkedin, github, stackoverflow, name, skills)
-    return jsonify({"success": True, "message": "Profile updated successfully"})
-
-@app.route("/api/profile", methods=["GET"])
-def get_profile():
-    if "user" not in session:
-        return jsonify({"success": False, "message": "Not logged in"}), 401
+    if request.method == "POST":
+        linkedin = request.form.get("linkedin_username")
+        github = request.form.get("github_username")
+        stackoverflow = request.form.get("stackoverflow_username")
+        name = request.form.get("name")
+        skills = request.form.get("skills")
+        handlers.add_or_update_profile(session["user"], linkedin, github, stackoverflow, name, skills)
+        return render_template("profile.html", success="Profile updated successfully", profile=request.form)
 
     profile = handlers.get_profile(session["user"])
-    if profile:
-        profile_data = {
-            "linkedin_username": profile[2],
-            "github_username": profile[3],
-            "stackoverflow_username": profile[4],
-            "name": profile[5],
-            "skills": profile[6]
-        }
-        return jsonify({"success": True, "profile": profile_data})
-    else:
-        return jsonify({"success": False, "message": "Profile not found"}), 404
+    return render_template("profile.html", profile=profile, success=None)
 
-# --------- Resume Analysis API (Optional AI) ---------
-@app.route("/api/analyze", methods=["POST"])
-def analyze_resume():
+
+# -------------------- RESUME ANALYSIS ROUTE (Optional) -------------------- #
+
+@app.route("/analyze_page", methods=["GET", "POST"])
+def analyze_page():
     if "user" not in session:
-        return jsonify({"success": False, "message": "Not logged in"}), 401
+        return redirect(url_for("index"))
 
-    if "resume" not in request.files:
-        return jsonify({"success": False, "message": "Resume file required"}), 400
+    if request.method == "POST":
+        if "resume" not in request.files:
+            return render_template("analyze.html", error="No resume uploaded")
 
-    resume_file = request.files["resume"]
-    job_description = request.form.get("jobDescription", "")
-    github_username = request.form.get("githubUsername", "")
-    
-    # Save resume file (optional)
-    filename = secure_filename(resume_file.filename)
-    path = os.path.join(UPLOAD_FOLDER, filename)
-    resume_file.save(path)
+        resume_file = request.files["resume"]
+        job_description = request.form.get("jobDescription", "")
+        github_username = request.form.get("githubUsername", "")
+        filename = secure_filename(resume_file.filename)
+        resume_file.save(os.path.join(UPLOAD_FOLDER, filename))
 
-    # Mock AI analysis (replace with your AI logic)
-    analysis_result = {
-        "aiAnalysis": f"Analyzed resume for {github_username}",
-        "skillGaps": ["Docker", "Kubernetes"],  # Example missing skills
-        "githubProjects": [
-            {"name": "AI Chatbot", "summary": "Built using NLP and Flask"},
-            {"name": "Portfolio Website", "summary": "React + Flask full-stack project"}
-        ]
-    }
+        # Mock AI analysis (replace with actual AI logic later)
+        analysis_result = {
+            "aiAnalysis": f"Analyzed resume for {github_username}",
+            "skillGaps": ["Docker", "Kubernetes"],
+            "githubProjects": [
+                {"name": "AI Chatbot", "summary": "Built using NLP and Flask"},
+                {"name": "Portfolio Website", "summary": "React + Flask full-stack project"}
+            ]
+        }
 
-    return jsonify(analysis_result)
+        return render_template("analyze.html", result=analysis_result, error=None)
 
+    return render_template("analyze.html", result=None, error=None)
+
+
+# -------------------- RUN APP -------------------- #
 if __name__ == "__main__":
     app.run(debug=True)
-
-    

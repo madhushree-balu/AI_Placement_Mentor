@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Resume</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Upload Resume</h2>
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% elif success %}
+            <p class="success">{{ success }}</p>
+        {% endif %}
+        <form method="POST" enctype="multipart/form-data">
+            <label>Resume File:</label>
+            <input type="file" name="resume" required><br>
+            <label>Category:</label>
+            <input type="text" name="category"><br>
+            <button type="submit">Upload</button>
+        </form>
+        <p><a href="/home">Back to Home</a></p>
+    </div>
+</body>
+</html>
+
+
+
+
+
+

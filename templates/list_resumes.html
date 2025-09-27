@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Uploaded Resumes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Uploaded Resumes</h2>
+        {% if resumes %}
+            <ul>
+                {% for r in resumes %}
+                    <li>{{ r[2] }} - {{ r[3] }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No resumes uploaded yet.</p>
+        {% endif %}
+        <p><a href="/home">Back to Home</a></p>
+    </div>
+</body>
+</html>
