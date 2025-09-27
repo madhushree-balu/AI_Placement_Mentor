@@ -1,3 +1,6 @@
 flask
-dotenv
-google-genai
+Werkzeug
+google-generativeai
+python-dotenv
+PyPDF2
+python-docx

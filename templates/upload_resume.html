@@ -1,31 +1,123 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Upload Resume</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    <div class="container">
-        <h2>Upload Resume</h2>
-        {% if error %}
-            <p class="error">{{ error }}</p>
-        {% elif success %}
-            <p class="success">{{ success }}</p>
-        {% endif %}
-        <form method="POST" enctype="multipart/form-data">
-            <label>Resume File:</label>
-            <input type="file" name="resume" required><br>
-            <label>Category:</label>
-            <input type="text" name="category"><br>
-            <button type="submit">Upload</button>
-        </form>
-        <p><a href="/home">Back to Home</a></p>
+<!-- UPLOAD_RESUME.HTML -->
+{% extends "base.html" %}
+
+{% block title %}Upload Resume - Career Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-2 p-0">
+            <div class="sidebar">
+                <div class="p-4 text-center border-bottom border-light border-opacity-25">
+                    <i class="fas fa-briefcase fa-2x mb-2"></i>
+                    <h5>Career Hub</h5>
+                </div>
+                <nav class="nav flex-column p-3">
+                    <a class="nav-link" href="{{ url_for('dashboard') }}">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                    <a class="nav-link active" href="{{ url_for('upload_resume_page') }}">
+                        <i class="fas fa-upload me-2"></i>Upload Resume
+                    </a>
+                    <a class="nav-link" href="{{ url_for('list_resumes') }}">
+                        <i class="fas fa-file-alt me-2"></i>My Resumes
+                    </a>
+                    <a class="nav-link" href="{{ url_for('interview') }}">
+                        <i class="fas fa-comments me-2"></i>Mock Interview
+                    </a>
+                    <a class="nav-link" href="{{ url_for('interview_history') }}">
+                        <i class="fas fa-history me-2"></i>Interview History
+                    </a>
+                    <a class="nav-link" href="{{ url_for('job_tracker') }}">
+                        <i class="fas fa-briefcase me-2"></i>Job Tracker
+                    </a>
+                    <a class="nav-link" href="{{ url_for('roadmaps') }}">
+                        <i class="fas fa-map me-2"></i>Career Roadmap
+                    </a>
+                    <a class="nav-link" href="{{ url_for('profile_page') }}">
+                        <i class="fas fa-user-cog me-2"></i>Profile
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-10">
+            <div class="p-4">
+                <h1 class="h2 mb-4">Upload Resume</h1>
+
+                {% if error %}
+                    <div class="alert alert-danger alert-custom">
+                        <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
+                    </div>
+                {% endif %}
+
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="card card-custom">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0"><i class="fas fa-cloud-upload-alt me-2"></i>Upload Your Resume</h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="POST" enctype="multipart/form-data">
+                                    <div class="mb-4">
+                                        <label for="resume" class="form-label">Choose Resume File</label>
+                                        <input type="file" class="form-control form-control-custom" id="resume" name="resume" 
+                                               accept=".pdf,.doc,.docx,.txt" required>
+                                        <div class="form-text">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Supported formats: PDF, DOC, DOCX, TXT (Max size: 16MB)
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="category" class="form-label">Resume Category</label>
+                                        <select class="form-control form-control-custom" id="category" name="category">
+                                            <option value="general">General</option>
+                                            <option value="technical">Technical</option>
+                                            <option value="management">Management</option>
+                                            <option value="sales">Sales & Marketing</option>
+                                            <option value="creative">Creative</option>
+                                            <option value="healthcare">Healthcare</option>
+                                            <option value="education">Education</option>
+                                            <option value="finance">Finance</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-custom w-100">
+                                        <i class="fas fa-upload me-2"></i>Upload & Analyze Resume
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="card card-custom mt-4">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>What happens after upload?</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4 text-center mb-3">
+                                        <i class="fas fa-search fa-3x text-primary mb-3"></i>
+                                        <h6>AI Analysis</h6>
+                                        <p class="text-muted small">Our AI analyzes your resume for skills, experience, and structure</p>
+                                    </div>
+                                    <div class="col-md-4 text-center mb-3">
+                                        <i class="fas fa-chart-line fa-3x text-success mb-3"></i>
+                                        <h6>ATS Scoring</h6>
+                                        <p class="text-muted small">Get an ATS compatibility score and optimization tips</p>
+                                    </div>
+                                    <div class="col-md-4 text-center mb-3">
+                                        <i class="fas fa-clipboard-list fa-3x text-warning mb-3"></i>
+                                        <h6>Recommendations</h6>
+                                        <p class="text-muted small">Receive personalized improvement suggestions</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</body>
-</html>
-
-
-
-
-
-
+</div>
+{% endblock %}

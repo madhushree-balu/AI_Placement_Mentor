@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block title %}Job Tracker - Career Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-2 p-0">
+            <div class="sidebar">
+                <div class="p-4 text-center border-bottom border-light border-opacity-25">
+                    <i class="fas fa-briefcase fa-2x mb-2"></i>
+                    <h5>Career Hub</h5>
+                </div>
+                <nav class="nav flex-column p-3">
+                    <a class="nav-link" href="{{ url_for('dashboard') }}">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                    <a class="nav-link" href="{{ url_for('upload_resume_page') }}">
+                        <i class="fas fa-upload me-2"></i>Upload Resume
+                    </a>
+                    <a class="nav-link" href="{{ url_for('list_resumes') }}">
+                        <i class="fas fa-file-alt me-2"></i>My Resumes
+                    </a>
+                    <a class="nav-link" href="{{ url_for('interview') }}">
+                        <i class="fas fa-comments me-2"></i>Mock Interview
+                    </a>
+                    <a class="nav-link" href="{{ url_for('interview_history') }}">
+                        <i class="fas fa-history me-2"></i>Interview History
+                    </a>
+                    <a class="nav-link active" href="{{ url_for('job_tracker') }}">
+                        <i class="fas fa-briefcase me-2"></i>Job Tracker
+                    </a>
+                    <a class="nav-link" href="{{ url_for('roadmaps') }}">
+                        <i class="fas fa-map me-2"></i>Career Roadmap
+                    </a>
+                    <a class="nav-link" href="{{ url_for('profile_page') }}">
+                        <i class="fas fa-user-cog me-2"></i>Profile
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-10">
+            <div class="p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h2">Job Applications Tracker</h1>
+                    <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#addJobModal">
+                        <i class="fas fa-plus me-2"></i>Add Application
+                    </button>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="row mb-4">
+                    {% set total_apps = applications|length %}
+                    {% set applied = applications|selectattr('5', 'equalto', 'applied')|list|length %}
+                    {% set interviewed = applications|selectattr('5', 'equalto', 'interviewed')|list|length %}
+                    {% set accepted = applications|selectattr('5', 'equalto', 'accepted')|list|length %}
+                    
+                    <div class="col-md-3 mb-3">
+                        <div class="card card-custom bg-primary text-white">
+                            <div class="card-body text-center">
+                                <i class="fas fa-paper-plane fa-2x mb-2"></i>
+                                <h3>{{ total_apps }}</h3>
+                                <p class="mb-0">Total Applications</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card card-custom bg-warning text-white">
+                            <div class="card-body text-center">
+                                <i class="fas fa-clock fa-2x mb-2"></i>
+                                <h3>{{ applied }}</h3>
+                                <p class="mb-0">Pending</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card card-custom bg-info text-white">
+                            <div class="card-body text-center">
+                                <i class="fas fa-comments fa-2x mb-2"></i>
+                                <h3>{{ interviewed }}</h3>
+                                <p class="mb-0">Interviewed</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card card-custom bg-success text-white">
+                            <div class="card-body text-center">
+                                <i class="fas fa-check-circle fa-2x mb-2"></i>
+                                <h3>{{ accepted }}</h3>
+                                <p class="mb-0">Accepted</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Applications Table -->
+                <div class="card card-custom">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-list me-2"></i>Your Applications</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if applications %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Company</th>
+                                            <th>Job Title</th>
+                                            <th>Status</th>
+                                            <th>Applied Date</th>
+                                            <th>Interview Date</th>
+                                            <th>Resume Used</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for app in applications %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ app[2] }}</strong>
+                                            </td>
+                                            <td>{{ app[3] }}</td>
+                                            <td>
+                                                <span class="badge bg-{{ 'success' if app[5] == 'accepted' else 'info' if app[5] == 'interviewed' else 'danger' if app[5] == 'rejected' else 'warning' }}">
+                                                    {{ app[5] }}
+                                                </span>
+                                            </td>
+                                            <td>{{ app[6] }}</td>
+                                            <td>{{ app[7] if app[7] else '-' }}</td>
+                                            <td>{{ app[10] if app[10] else 'No resume' }}</td>
+                                            <td>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                                        <i class="fas fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li><a class="dropdown-item" href="#" onclick="updateStatus({{ app[0] }}, '{{ app[5] }}')">
+                                                            <i class="fas fa-edit me-2"></i>Update Status
+                                                        </a></li>
+                                                        <li><a class="dropdown-item" href="#" onclick="addNotes({{ app[0] }})">
+                                                            <i class="fas fa-sticky-note me-2"></i>Add Notes
+                                                        </a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="fas fa-briefcase fa-5x text-muted mb-4"></i>
+                                <h4 class="text-muted">No job applications yet</h4>
+                                <p class="text-muted">Start tracking your job applications to stay organized</p>
+                                <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#addJobModal">
+                                    <i class="fas fa-plus me-2"></i>Add Your First Application
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Job Modal -->
+<div class="modal fade" id="addJobModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-plus me-2"></i>Add Job Application</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST">
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="company_name" class="form-label">Company Name</label>
+                            <input type="text" class="form-control" id="company_name" name="company_name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="job_title" class="form-label">Job Title</label>
+                            <input type="text" class="form-control" id="job_title" name="job_title" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="job_description" class="form-label">Job Description (Optional)</label>
+                        <textarea class="form-control" id="job_description" name="job_description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="resume_used" class="form-label">Resume Used</label>
+                        <select class="form-control" id="resume_used" name="resume_used">
+                            <option value="">No resume selected</option>
+                            {% for resume in resumes %}
+                                <option value="{{ resume[0] }}">{{ resume[3] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-custom">Add Application</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Update Status Modal -->
+<div class="modal fade" id="updateStatusModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Application Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="statusForm" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-control" id="status" name="status" required>
+                            <option value="applied">Applied</option>
+                            <option value="interviewed">Interviewed</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="accepted">Accepted</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="interview_date" class="form-label">Interview Date (if applicable)</label>
+                        <input type="datetime-local" class="form-control" id="interview_date" name="interview_date">
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-custom">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateStatus(appId, currentStatus) {
+    document.getElementById('statusForm').action = `/update_application/${appId}`;
+    document.getElementById('status').value = currentStatus;
+    new bootstrap.Modal(document.getElementById('updateStatusModal')).show();
+}
+
+function addNotes(appId) {
+    updateStatus(appId, '');
+}
+</script>
+{% endblock %}

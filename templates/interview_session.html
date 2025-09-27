@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Interview Session - Career Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="p-4">
+                <!-- Header -->
+                <div class="card card-custom mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-comments me-2"></i>
+                                Interview: {{ interview_session[2] }}
+                            </h5>
+                            <div class="text-end">
+                                <div class="mb-1">Question {{ question_number }} of {{ total_questions }}</div>
+                                <div class="progress bg-light" style="width: 200px; height: 8px;">
+                                    <div class="progress-bar" style="width: {{ (question_number / total_questions * 100) }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>Type:</strong> <span class="badge bg-info">{{ interview_session[5] }}</span>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Difficulty:</strong> <span class="badge bg-warning">{{ interview_session[4] }}</span>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Started:</strong> {{ interview_session[7] }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Previous Feedback -->
+                {% if last_feedback %}
+                <div class="card card-custom mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-check-circle me-2"></i>Feedback on Previous Answer</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <strong>Question:</strong>
+                            <p class="mt-2">{{ last_feedback.question }}</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Your Answer:</strong>
+                            <p class="mt-2 text-muted">{{ last_feedback.user_answer }}</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <strong>Score: {{ last_feedback.score }}/10</strong>
+                                <div class="progress" style="width: 200px;">
+                                    <div class="progress-bar bg-success" style="width: {{ last_feedback.score * 10 }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <strong>AI Feedback:</strong>
+                            <p class="mb-0 mt-2">{{ last_feedback.feedback.overall_feedback or 'Good response!' }}</p>
+                        </div>
+
+                        {% if last_feedback.feedback.strengths %}
+                        <div class="mb-2">
+                            <strong class="text-success">Strengths:</strong>
+                            <ul class="list-unstyled mt-1">
+                                {% for strength in last_feedback.feedback.strengths %}
+                                <li><i class="fas fa-check text-success me-2"></i>{{ strength }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+
+                        {% if last_feedback.feedback.improvements %}
+                        <div>
+                            <strong class="text-warning">Areas for Improvement:</strong>
+                            <ul class="list-unstyled mt-1">
+                                {% for improvement in last_feedback.feedback.improvements %}
+                                <li><i class="fas fa-arrow-up text-warning me-2"></i>{{ improvement }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Current Question -->
+                {% if current_question %}
+                <div class="card card-custom">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-question-circle me-2"></i>
+                            Question {{ question_number }}
+                            <span class="badge bg-light text-dark ms-2">{{ current_question[3] or 'General' }}</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <h4>{{ current_question[1] }}</h4>
+                        </div>
+
+                        <form method="POST">
+                            <input type="hidden" name="question_id" value="{{ current_question[0] }}">
+                            <input type="hidden" name="time_taken" id="time_taken" value="0">
+                            
+                            <div class="mb-4">
+                                <label for="answer" class="form-label">Your Answer</label>
+                                <textarea class="form-control form-control-custom" id="answer" name="answer" 
+                                         rows="8" required placeholder="Take your time to provide a thoughtful response..."></textarea>
+                                <div class="form-text">
+                                    <i class="fas fa-clock me-1"></i>Time elapsed: <span id="timer">00:00</span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-outline-secondary" onclick="pauseInterview()">
+                                    <i class="fas fa-pause me-2"></i>Pause Interview
+                                </button>
+                                <button type="submit" class="btn btn-custom">
+                                    <i class="fas fa-arrow-right me-2"></i>Submit Answer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Tips -->
+                <div class="card card-custom mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Interview Tips</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h6><i class="fas fa-microphone me-2"></i>Be Specific</h6>
+                                <p class="small text-muted">Use concrete examples and metrics when possible</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h6><i class="fas fa-users me-2"></i>Use STAR Method</h6>
+                                <p class="small text-muted">Situation, Task, Action, Result for behavioral questions</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h6><i class="fas fa-clock me-2"></i>Take Your Time</h6>
+                                <p class="small text-muted">Think before answering, quality over speed</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let startTime = Date.now();
+let timerInterval;
+
+function updateTimer() {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+    document.getElementById('timer').textContent = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    document.getElementById('time_taken').value = elapsed;
+}
+
+function pauseInterview() {
+    if (confirm('Are you sure you want to pause this interview? You can resume later.')) {
+        clearInterval(timerInterval);
+        window.location.href = "{{ url_for('interview_history') }}";
+    }
+}
+
+// Start timer
+timerInterval = setInterval(updateTimer, 1000);
+
+// Auto-save answer every 30 seconds
+setInterval(function() {
+    const answer = document.getElementById('answer').value;
+    if (answer.trim()) {
+        localStorage.setItem('interview_answer_{{ current_question[0] }}', answer);
+    }
+}, 30000);
+
+// Load saved answer
+window.onload = function() {
+    const savedAnswer = localStorage.getItem('interview_answer_{{ current_question[0] }}');
+    if (savedAnswer) {
+        document.getElementById('answer').value = savedAnswer;
+    }
+};
+
+// Clear saved answer on submit
+document.querySelector('form').addEventListener('submit', function() {
+    localStorage.removeItem('interview_answer_{{ current_question[0] }}');
+});
+</script>
+{% endblock %}

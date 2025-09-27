@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Practice Questions - Career Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-2 p-0">
+            <div class="sidebar">
+                <div class="p-4 text-center border-bottom border-light border-opacity-25">
+                    <i class="fas fa-briefcase fa-2x mb-2"></i>
+                    <h5>Career Hub</h5>
+                </div>
+                <nav class="nav flex-column p-3">
+                    <a class="nav-link" href="{{ url_for('dashboard') }}">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                    <a class="nav-link" href="{{ url_for('upload_resume_page') }}">
+                        <i class="fas fa-upload me-2"></i>Upload Resume
+                    </a>
+                    <a class="nav-link" href="{{ url_for('list_resumes') }}">
+                        <i class="fas fa-file-alt me-2"></i>My Resumes
+                    </a>
+                    <a class="nav-link" href="{{ url_for('interview') }}">
+                        <i class="fas fa-comments me-2"></i>Mock Interview
+                    </a>
+                    <a class="nav-link" href="{{ url_for('interview_history') }}">
+                        <i class="fas fa-history me-2"></i>Interview History
+                    </a>
+                    <a class="nav-link" href="{{ url_for('job_tracker') }}">
+                        <i class="fas fa-briefcase me-2"></i>Job Tracker
+                    </a>
+                    <a class="nav-link" href="{{ url_for('roadmaps') }}">
+                        <i class="fas fa-map me-2"></i>Career Roadmap
+                    </a>
+                    <a class="nav-link" href="{{ url_for('profile_page') }}">
+                        <i class="fas fa-user-cog me-2"></i>Profile
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-10">
+            <div class="p-4">
+                <h1 class="h2 mb-4">Practice Interview Questions</h1>
+
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card card-custom mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0"><i class="fas fa-dumbbell me-2"></i>Common Interview Questions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="accordion" id="questionsAccordion">
+                                    <!-- Behavioral Questions -->
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#behavioral">
+                                                <i class="fas fa-users me-2"></i>Behavioral Questions
+                                            </button>
+                                        </h2>
+                                        <div id="behavioral" class="accordion-collapse collapse show" data-bs-parent="#questionsAccordion">
+                                            <div class="accordion-body">
+                                                <ul class="list-group list-group-flush">
+                                                    <li class="list-group-item">Tell me about yourself</li>
+                                                    <li class="list-group-item">Describe a challenging situation you faced at work</li>
+                                                    <li class="list-group-item">How do you handle conflict with team members?</li>
+                                                    <li class="list-group-item">Tell me about a time you failed</li>
+                                                    <li class="list-group-item">Where do you see yourself in 5 years?</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Technical Questions -->
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#technical">
+                                                <i class="fas fa-code me-2"></i>Technical Questions
+                                            </button>
+                                        </h2>
+                                        <div id="technical" class="accordion-collapse collapse" data-bs-parent="#questionsAccordion">
+                                            <div class="accordion-body">
+                                                <ul class="list-group list-group-flush">
+                                                    <li class="list-group-item">Explain your approach to debugging</li>
+                                                    <li class="list-group-item">How do you stay updated with technology?</li>
+                                                    <li class="list-group-item">Describe your development workflow</li>
+                                                    <li class="list-group-item">What's your experience with version control?</li>
+                                                    <li class="list-group-item">How do you ensure code quality?</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Company Questions -->
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#company">
+                                                <i class="fas fa-building me-2"></i>Company-Specific Questions
+                                            </button>
+                                        </h2>
+                                        <div id="company" class="accordion-collapse collapse" data-bs-parent="#questionsAccordion">
+                                            <div class="accordion-body">
+                                                <ul class="list-group list-group-flush">
+                                                    <li class="list-group-item">Why do you want to work here?</li>
+                                                    <li class="list-group-item">What do you know about our company?</li>
+                                                    <li class="list-group-item">How would you contribute to our team?</li>
+                                                    <li class="list-group-item">What interests you about this role?</li>
+                                                    <li class="list-group-item">Do you have any questions for us?</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card card-custom mb-4">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0"><i class="fas fa-rocket me-2"></i>Ready to Practice?</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <p>Get personalized practice with our AI interviewer</p>
+                                <a href="{{ url_for('interview') }}" class="btn btn-custom w-100 mb-2">
+                                    <i class="fas fa-play me-2"></i>Start Mock Interview
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="card card-custom">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Interview Tips</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="fas fa-star text-warning me-2"></i>Use the STAR method for behavioral questions</li>
+                                    <li class="mb-2"><i class="fas fa-clock text-info me-2"></i>Practice your timing - aim for 2-3 minutes per answer</li>
+                                    <li class="mb-2"><i class="fas fa-microphone text-success me-2"></i>Practice out loud, not just in your head</li>
+                                    <li class="mb-0"><i class="fas fa-question text-primary me-2"></i>Prepare thoughtful questions to ask the interviewer</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

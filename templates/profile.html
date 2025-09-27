@@ -1,29 +1,214 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Profile</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    <div class="container">
-        <h2>Profile</h2>
-        {% if success %}
-            <p class="success">{{ success }}</p>
-        {% endif %}
-        <form method="POST">
-            <label>Name:</label>
-            <input type="text" name="name" value="{{ profile[5] if profile else '' }}"><br>
-            <label>LinkedIn Username:</label>
-            <input type="text" name="linkedin_username" value="{{ profile[2] if profile else '' }}"><br>
-            <label>GitHub Username:</label>
-            <input type="text" name="github_username" value="{{ profile[3] if profile else '' }}"><br>
-            <label>StackOverflow Username:</label>
-            <input type="text" name="stackoverflow_username" value="{{ profile[4] if profile else '' }}"><br>
-            <label>Skills (comma-separated):</label>
-            <input type="text" name="skills" value="{{ profile[6] if profile else '' }}"><br>
-            <button type="submit">Save Profile</button>
-        </form>
-        <p><a href="/home">Back to Home</a></p>
+{% extends "base.html" %}
+
+{% block title %}Profile - Career Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-2 p-0">
+            <div class="sidebar">
+                <div class="p-4 text-center border-bottom border-light border-opacity-25">
+                    <i class="fas fa-briefcase fa-2x mb-2"></i>
+                    <h5>Career Hub</h5>
+                </div>
+                <nav class="nav flex-column p-3">
+                    <a class="nav-link" href="{{ url_for('dashboard') }}">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                    <a class="nav-link" href="{{ url_for('upload_resume_page') }}">
+                        <i class="fas fa-upload me-2"></i>Upload Resume
+                    </a>
+                    <a class="nav-link" href="{{ url_for('list_resumes') }}">
+                        <i class="fas fa-file-alt me-2"></i>My Resumes
+                    </a>
+                    <a class="nav-link" href="{{ url_for('interview') }}">
+                        <i class="fas fa-comments me-2"></i>Mock Interview
+                    </a>
+                    <a class="nav-link" href="{{ url_for('interview_history') }}">
+                        <i class="fas fa-history me-2"></i>Interview History
+                    </a>
+                    <a class="nav-link" href="{{ url_for('job_tracker') }}">
+                        <i class="fas fa-briefcase me-2"></i>Job Tracker
+                    </a>
+                    <a class="nav-link" href="{{ url_for('roadmaps') }}">
+                        <i class="fas fa-map me-2"></i>Career Roadmap
+                    </a>
+                    <a class="nav-link active" href="{{ url_for('profile_page') }}">
+                        <i class="fas fa-user-cog me-2"></i>Profile
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-10">
+            <div class="p-4">
+                <h1 class="h2 mb-4">Profile Settings</h1>
+
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card card-custom">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0"><i class="fas fa-user-edit me-2"></i>Personal Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="POST">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="name" class="form-label">Full Name</label>
+                                            <input type="text" class="form-control form-control-custom" id="name" 
+                                                   name="name" value="{{ profile[4] if profile else '' }}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="phone" class="form-label">Phone Number</label>
+                                            <input type="tel" class="form-control form-control-custom" id="phone" 
+                                                   name="phone" value="{{ profile[9] if profile else '' }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="location" class="form-label">Location</label>
+                                        <input type="text" class="form-control form-control-custom" id="location" 
+                                               name="location" placeholder="City, State/Country" 
+                                               value="{{ profile[8] if profile else '' }}">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="experience_level" class="form-label">Experience Level</label>
+                                        <select class="form-control form-control-custom" id="experience_level" name="experience_level">
+                                            <option value="">Select experience level</option>
+                                            <option value="entry" {{ 'selected' if profile and profile[6] == 'entry' else '' }}>Entry Level (0-2 years)</option>
+                                            <option value="mid" {{ 'selected' if profile and profile[6] == 'mid' else '' }}>Mid Level (3-5 years)</option>
+                                            <option value="senior" {{ 'selected' if profile and profile[6] == 'senior' else '' }}>Senior Level (6-10 years)</option>
+                                            <option value="lead" {{ 'selected' if profile and profile[6] == 'lead' else '' }}>Lead/Principal (10+ years)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="skills" class="form-label">Skills</label>
+                                        <textarea class="form-control form-control-custom" id="skills" name="skills" rows="3"
+                                                  placeholder="Enter skills separated by commas (e.g., Python, JavaScript, Project Management)">{{ profile[5] if profile else '' }}</textarea>
+                                        <div class="form-text">Separate skills with commas</div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="preferred_roles" class="form-label">Preferred Job Roles</label>
+                                        <textarea class="form-control form-control-custom" id="preferred_roles" name="preferred_roles" rows="3"
+                                                  placeholder="Enter preferred roles separated by commas (e.g., Software Engineer, Product Manager)">{{ profile[7] if profile else '' }}</textarea>
+                                        <div class="form-text">Separate roles with commas</div>
+                                    </div>
+
+                                    <h6 class="mt-4 mb-3">Social Profiles</h6>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-4">
+                                            <label for="linkedin_username" class="form-label">
+                                                <i class="fab fa-linkedin text-primary me-2"></i>LinkedIn
+                                            </label>
+                                            <input type="text" class="form-control form-control-custom" id="linkedin_username" 
+                                                   name="linkedin_username" placeholder="your-profile" 
+                                                   value="{{ profile[2] if profile else '' }}">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="github_username" class="form-label">
+                                                <i class="fab fa-github me-2"></i>GitHub
+                                            </label>
+                                            <input type="text" class="form-control form-control-custom" id="github_username" 
+                                                   name="github_username" placeholder="your-username" 
+                                                   value="{{ profile[3] if profile else '' }}">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="stackoverflow_username" class="form-label">
+                                                <i class="fab fa-stack-overflow text-warning me-2"></i>Stack Overflow
+                                            </label>
+                                            <input type="text" class="form-control form-control-custom" id="stackoverflow_username" 
+                                                   name="stackoverflow_username" placeholder="your-username" 
+                                                   value="{{ profile[4] if profile and profile|length > 4 else '' }}">
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-custom">
+                                        <i class="fas fa-save me-2"></i>Save Profile
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card card-custom mb-4">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Profile Completion</h5>
+                            </div>
+                            <div class="card-body">
+                                {% set completion = 0 %}
+                                {% if profile %}
+                                    {% if profile[4] %}{% set completion = completion + 20 %}{% endif %}
+                                    {% if profile[2] %}{% set completion = completion + 15 %}{% endif %}
+                                    {% if profile[3] %}{% set completion = completion + 15 %}{% endif %}
+                                    {% if profile[5] %}{% set completion = completion + 25 %}{% endif %}
+                                    {% if profile[6] %}{% set completion = completion + 15 %}{% endif %}
+                                    {% if profile[8] %}{% set completion = completion + 10 %}{% endif %}
+                                {% endif %}
+                                
+                                <div class="text-center mb-3">
+                                    <div class="position-relative d-inline-flex">
+                                        <svg width="80" height="80" viewBox="0 0 80 80">
+                                            <circle cx="40" cy="40" r="35" fill="none" stroke="#e5e7eb" stroke-width="8"/>
+                                            <circle cx="40" cy="40" r="35" fill="none" stroke="#667eea" stroke-width="8" 
+                                                    stroke-linecap="round" stroke-dasharray="220" 
+                                                    stroke-dashoffset="{{ 220 - (220 * completion / 100) }}"
+                                                    transform="rotate(-90 40 40)"/>
+                                        </svg>
+                                        <div class="position-absolute top-50 start-50 translate-middle">
+                                            <span class="fw-bold">{{ completion }}%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="small">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Name</span>
+                                        <i class="fas fa-{{ 'check text-success' if profile and profile[4] else 'times text-muted' }}"></i>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Skills</span>
+                                        <i class="fas fa-{{ 'check text-success' if profile and profile[5] else 'times text-muted' }}"></i>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Experience Level</span>
+                                        <i class="fas fa-{{ 'check text-success' if profile and profile[6] else 'times text-muted' }}"></i>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>LinkedIn</span>
+                                        <i class="fas fa-{{ 'check text-success' if profile and profile[2] else 'times text-muted' }}"></i>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>GitHub</span>
+                                        <i class="fas fa-{{ 'check text-success' if profile and profile[3] else 'times text-muted' }}"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card card-custom">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Profile Tips</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Complete profile helps generate better interview questions</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Skills are used for personalized recommendations</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Social profiles enhance networking visibility</li>
+                                    <li class="mb-0"><i class="fas fa-check text-success me-2"></i>Regular updates improve AI suggestions</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

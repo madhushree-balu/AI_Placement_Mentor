@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Career Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-2 p-0">
+            <div class="sidebar">
+                <div class="p-4 text-center border-bottom border-light border-opacity-25">
+                    <i class="fas fa-briefcase fa-2x mb-2"></i>
+                    <h5>Career Hub</h5>
+                </div>
+                <nav class="nav flex-column p-3">
+                    <a class="nav-link active" href="{{ url_for('dashboard') }}">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                    <a class="nav-link" href="{{ url_for('upload_resume_page') }}">
+                        <i class="fas fa-upload me-2"></i>Upload Resume
+                    </a>
+                    <a class="nav-link" href="{{ url_for('list_resumes') }}">
+                        <i class="fas fa-file-alt me-2"></i>My Resumes
+                    </a>
+                    <a class="nav-link" href="{{ url_for('interview') }}">
+                        <i class="fas fa-comments me-2"></i>Mock Interview
+                    </a>
+                    <a class="nav-link" href="{{ url_for('interview_history') }}">
+                        <i class="fas fa-history me-2"></i>Interview History
+                    </a>
+                    <a class="nav-link" href="{{ url_for('job_tracker') }}">
+                        <i class="fas fa-briefcase me-2"></i>Job Tracker
+                    </a>
+                    <a class="nav-link" href="{{ url_for('roadmaps') }}">
+                        <i class="fas fa-map me-2"></i>Career Roadmap
+                    </a>
+                    <a class="nav-link" href="{{ url_for('profile_page') }}">
+                        <i class="fas fa-user-cog me-2"></i>Profile
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-10">
+            <div class="p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h2">Dashboard</h1>
+                    <span class="badge bg-primary fs-6">Welcome, {{ user }}</span>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-number">{{ stats.total_resumes }}</div>
+                            <div>Resumes Uploaded</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-number">{{ stats.analyzed_resumes }}</div>
+                            <div>Resumes Analyzed</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-number">{{ stats.total_interviews }}</div>
+                            <div>Mock Interviews</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-number">{{ stats.job_applications }}</div>
+                            <div>Job Applications</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="row mb-4">
+                    <div class="col-lg-8">
+                        <div class="card card-custom">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <a href="{{ url_for('upload_resume_page') }}" class="btn btn-outline-primary w-100">
+                                            <i class="fas fa-upload me-2"></i>Upload New Resume
+                                        </a>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <a href="{{ url_for('interview') }}" class="btn btn-outline-success w-100">
+                                            <i class="fas fa-comments me-2"></i>Start Mock Interview
+                                        </a>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <a href="{{ url_for('roadmaps') }}" class="btn btn-outline-info w-100">
+                                            <i class="fas fa-map me-2"></i>Generate Roadmap
+                                        </a>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <a href="{{ url_for('job_tracker') }}" class="btn btn-outline-warning w-100">
+                                            <i class="fas fa-briefcase me-2"></i>Track Applications
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card card-custom">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Progress</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Profile Complete</span>
+                                        <span>{{ '100%' if stats.profile_complete else '50%' }}</span>
+                                    </div>
+                                    <div class="progress progress-custom">
+                                        <div class="progress-bar progress-bar-custom" style="width: {{ '100%' if stats.profile_complete else '50%' }}"></div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Average Score</span>
+                                        <span>{{ stats.avg_interview_score }}%</span>
+                                    </div>
+                                    <div class="progress progress-custom">
+                                        <div class="progress-bar progress-bar-custom" style="width: {{ stats.avg_interview_score }}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card card-custom">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Recent Interview Sessions</h5>
+                            </div>
+                            <div class="card-body">
+                                {% if recent_sessions %}
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Job Title</th>
+                                                    <th>Type</th>
+                                                    <th>Difficulty</th>
+                                                    <th>Status</th>
+                                                    <th>Date</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for session in recent_sessions %}
+                                                <tr>
+                                                    <td>{{ session[2] }}</td>
+                                                    <td><span class="badge bg-primary">{{ session[5] }}</span></td>
+                                                    <td><span class="badge bg-secondary">{{ session[4] }}</span></td>
+                                                    <td>
+                                                        <span class="badge bg-{{ 'success' if session[6] == 'completed' else 'warning' }}">
+                                                            {{ session[6] }}
+                                                        </span>
+                                                    </td>
+                                                    <td>{{ session[7] }}</td>
+                                                    <td>
+                                                        <a href="{{ url_for('interview_results', session_id=session[0]) }}" class="btn btn-sm btn-outline-primary">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <p class="text-muted text-center py-3">No recent interview sessions. Start your first mock interview!</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

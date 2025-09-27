@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}Interview Results - Career Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-2 p-0">
+            <div class="sidebar">
+                <div class="p-4 text-center border-bottom border-light border-opacity-25">
+                    <i class="fas fa-briefcase fa-2x mb-2"></i>
+                    <h5>Career Hub</h5>
+                </div>
+                <nav class="nav flex-column p-3">
+                    <a class="nav-link" href="{{ url_for('dashboard') }}">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                    <a class="nav-link" href="{{ url_for('upload_resume_page') }}">
+                        <i class="fas fa-upload me-2"></i>Upload Resume
+                    </a>
+                    <a class="nav-link" href="{{ url_for('list_resumes') }}">
+                        <i class="fas fa-file-alt me-2"></i>My Resumes
+                    </a>
+                    <a class="nav-link" href="{{ url_for('interview') }}">
+                        <i class="fas fa-comments me-2"></i>Mock Interview
+                    </a>
+                    <a class="nav-link active" href="{{ url_for('interview_history') }}">
+                        <i class="fas fa-history me-2"></i>Interview History
+                    </a>
+                    <a class="nav-link" href="{{ url_for('job_tracker') }}">
+                        <i class="fas fa-briefcase me-2"></i>Job Tracker
+                    </a>
+                    <a class="nav-link" href="{{ url_for('roadmaps') }}">
+                        <i class="fas fa-map me-2"></i>Career Roadmap
+                    </a>
+                    <a class="nav-link" href="{{ url_for('profile_page') }}">
+                        <i class="fas fa-user-cog me-2"></i>Profile
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-10">
+            <div class="p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h2">Interview Results</h1>
+                    <div>
+                        <button onclick="window.print()" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-print me-2"></i>Print Report
+                        </button>
+                        <a href="{{ url_for('interview_history') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to History
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Session Overview -->
+                <div class="card card-custom mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-clipboard-list me-2"></i>{{ interview_session[2] }} - Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="stat-number text-primary">{{ stats.avg_score }}/10</div>
+                                    <div>Average Score</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="stat-number text-info">{{ stats.total_questions }}</div>
+                                    <div>Questions Answered</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="stat-number text-success">{{ stats.total_time // 60 }}m</div>
+                                    <div>Total Time</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="stat-number text-warning">{{ stats.avg_time_per_question }}s</div>
+                                    <div>Avg per Question</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Report -->
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card card-custom mb-4">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Detailed Analysis</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-4" style="white-space: pre-line;">{{ detailed_report }}</div>
+                            </div>
+                        </div>
+
+                        <!-- Question by Question -->
+                        <div class="card card-custom">
+                            <div class="card-header bg-secondary text-white">
+                                <h5 class="mb-0"><i class="fas fa-list-ol me-2"></i>Question-by-Question Review</h5>
+                            </div>
+                            <div class="card-body">
+                                {% for question in questions %}
+                                <div class="mb-4 pb-4 {% if not loop.last %}border-bottom{% endif %}">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <h6 class="mb-0">Question {{ loop.index }}</h6>
+                                        <div class="d-flex align-items-center">
+                                            <span class="badge bg-{{ 'success' if question[7] >= 8 else 'warning' if question[7] >= 6 else 'danger' }} me-2">
+                                                {{ question[7] }}/10
+                                            </span>
+                                            <span class="text-muted small">{{ question[8] }}s</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <strong>Question:</strong>
+                                        <p class="mt-1">{{ question[1] }}</p>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <strong>Your Answer:</strong>
+                                        <div class="bg-light p-3 rounded mt-1">
+                                            {{ question[5] }}
+                                        </div>
+                                    </div>
+                                    
+                                    {% if question[6] %}
+                                    <div>
+                                        <strong>AI Feedback:</strong>
+                                        <div class="alert alert-info mt-1">
+                                            {{ question[6] }}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <!-- Performance Chart -->
+                        <div class="card card-custom mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Performance</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <canvas id="performanceChart" width="200" height="200"></canvas>
+                                <div class="mt-3">
+                                    <div class="row text-center">
+                                        <div class="col-6">
+                                            <div class="text-success">
+                                                <i class="fas fa-thumbs-up fa-2x"></i>
+                                                <div class="mt-1">{{ questions|selectattr('7', 'gt', 7)|list|length }} Strong</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="text-warning">
+                                                <i class="fas fa-thumbs-down fa-2x"></i>
+                                                <div class="mt-1">{{ questions|selectattr('7', 'lt', 6)|list|length }} Need Work</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Next Steps -->
+                        <div class="card card-custom">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0"><i class="fas fa-forward me-2"></i>Next Steps</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2">
+                                    <a href="{{ url_for('interview') }}" class="btn btn-primary">
+                                        <i class="fas fa-redo me-2"></i>Take Another Interview
+                                    </a>
+                                    <a href="{{ url_for('practice_questions') }}" class="btn btn-outline-info">
+                                        <i class="fas fa-dumbbell me-2"></i>Practice Questions
+                                    </a>
+                                    <a href="{{ url_for('roadmaps') }}" class="btn btn-outline-warning">
+                                        <i class="fas fa-map me-2"></i>Skill Roadmap
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script>
+// Performance Pie Chart
+const ctx = document.getElementById('performanceChart').getContext('2d');
+const scores = {{ questions|map(attribute='7')|list }};
+const strong = scores.filter(s => s >= 8).length;
+const good = scores.filter(s => s >= 6 && s < 8).length;
+const needWork = scores.filter(s => s < 6).length;
+
+new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Strong (8+)', 'Good (6-7)', 'Need Work (<6)'],
+        datasets: [{
+            data: [strong, good, needWork],
+            backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

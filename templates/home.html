@@ -1,19 +1,104 @@
+{% if not session.user %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Home</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Career Hub</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .login-form {
+            padding: 3rem;
+        }
+        .login-image {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 600;
+        }
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e5e7eb;
+            padding: 12px 16px;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h2>Welcome, {{ user }}!</h2>
-        <ul>
-            <li><a href="/upload_resume_page">Upload Resume</a></li>
-            <li><a href="/profile_page">View / Update Profile</a></li>
-            <li><a href="/list_resumes">View Uploaded Resumes</a></li>
-            <li><a href="/analyze_page">Analyze Resume</a></li>
-            <li><a href="/logout">Logout</a></li>
-        </ul>
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="login-container">
+                    <div class="row g-0">
+                        <div class="col-lg-6 login-image">
+                            <div>
+                                <i class="fas fa-briefcase fa-5x mb-4"></i>
+                                <h2 class="mb-3">Career Hub</h2>
+                                <p class="mb-0">Your AI-powered career companion for resumes, interviews, and job tracking</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="login-form">
+                                <h3 class="mb-4 text-center">Welcome Back</h3>
+                                
+                                {% if error %}
+                                    <div class="alert alert-danger">
+                                        <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
+                                    </div>
+                                {% endif %}
+
+                                <form method="POST" action="{{ url_for('login_page') }}">
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email Address</label>
+                                        <input type="email" class="form-control" id="email" name="email" required>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="password" class="form-label">Password</label>
+                                        <input type="password" class="form-control" id="password" name="password" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary-custom w-100 mb-3">
+                                        <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                                    </button>
+                                </form>
+                                
+                                <div class="text-center">
+                                    <p class="mb-0">Don't have an account? 
+                                        <a href="{{ url_for('signup_page') }}" class="text-decoration-none">Sign up here</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+{% endif %}

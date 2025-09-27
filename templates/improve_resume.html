@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Improve Resume - Career Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-2 p-0">
+            <div class="sidebar">
+                <div class="p-4 text-center border-bottom border-light border-opacity-25">
+                    <i class="fas fa-briefcase fa-2x mb-2"></i>
+                    <h5>Career Hub</h5>
+                </div>
+                <nav class="nav flex-column p-3">
+                    <a class="nav-link" href="{{ url_for('dashboard') }}">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                    <a class="nav-link" href="{{ url_for('upload_resume_page') }}">
+                        <i class="fas fa-upload me-2"></i>Upload Resume
+                    </a>
+                    <a class="nav-link" href="{{ url_for('list_resumes') }}">
+                        <i class="fas fa-file-alt me-2"></i>My Resumes
+                    </a>
+                    <a class="nav-link" href="{{ url_for('interview') }}">
+                        <i class="fas fa-comments me-2"></i>Mock Interview
+                    </a>
+                    <a class="nav-link" href="{{ url_for('interview_history') }}">
+                        <i class="fas fa-history me-2"></i>Interview History
+                    </a>
+                    <a class="nav-link" href="{{ url_for('job_tracker') }}">
+                        <i class="fas fa-briefcase me-2"></i>Job Tracker
+                    </a>
+                    <a class="nav-link" href="{{ url_for('roadmaps') }}">
+                        <i class="fas fa-map me-2"></i>Career Roadmap
+                    </a>
+                    <a class="nav-link" href="{{ url_for('profile_page') }}">
+                        <i class="fas fa-user-cog me-2"></i>Profile
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-10">
+            <div class="p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h2">Resume Improvement Suggestions</h1>
+                    <a href="{{ url_for('resume_analysis', resume_id=resume[0]) }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Analysis
+                    </a>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Job Description Input -->
+                        <div class="card card-custom mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0"><i class="fas fa-search me-2"></i>Tailor to Job Description</h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="POST">
+                                    <div class="mb-3">
+                                        <label for="job_description" class="form-label">Paste Job Description (Optional)</label>
+                                        <textarea class="form-control form-control-custom" id="job_description" 
+                                                  name="job_description" rows="6" 
+                                                  placeholder="Paste the job description here to get tailored improvement suggestions...">{{ job_description if job_description else '' }}</textarea>
+                                        <div class="form-text">Adding a job description will provide more targeted suggestions</div>
+                                    </div>
+                                    <button type="submit" class="btn btn-custom">
+                                        <i class="fas fa-magic me-2"></i>Get Tailored Suggestions
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- General Improvements -->
+                        {% if improvements %}
+                        <div class="card card-custom mb-4">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>AI-Powered Improvement Suggestions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div style="white-space: pre-line;">{{ improvements }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Job Match Analysis -->
+                        {% if job_match %}
+                        <div class="card card-custom mb-4">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0"><i class="fas fa-bullseye me-2"></i>Job Match Analysis</h5>
+                            </div>
+                            <div class="card-body">
+                                <div style="white-space: pre-line;">{{ job_match }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-lg-4">
+                        <!-- Resume Info -->
+                        <div class="card card-custom mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>Resume Info</h5>
+                            </div>
+                            <div class="card-body">
+                                <h6>{{ resume[3] }}</h6>
+                                <p class="text-muted mb-2">{{ resume[4] or 'General' }} Resume</p>
+                                <p class="text-muted small">Uploaded: {{ resume[6] }}</p>
+                                <a href="{{ url_for('download_resume', resume_id=resume[0]) }}" class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="fas fa-download me-2"></i>Download Original
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Quick Tips -->
+                        <div class="card card-custom">
+                            <div class="card-header bg-warning text-white">
+                                <h5 class="mb-0"><i class="fas fa-tips me-2"></i>Quick Tips</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Use action verbs to start bullet points</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Quantify achievements with numbers</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Include relevant keywords from job description</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Keep formatting clean and consistent</li>
+                                    <li class="mb-0"><i class="fas fa-check text-success me-2"></i>Tailor content for each application</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

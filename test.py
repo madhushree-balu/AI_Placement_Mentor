@@ -1,4 +1,4 @@
-from gemini_ai import GeminiWrapper
+from gemini_wrapper import GeminiWrapper
 from roadmap_dataset import data_dict
 
 gemini = GeminiWrapper()

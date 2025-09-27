@@ -1,22 +1,162 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Uploaded Resumes</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    <div class="container">
-        <h2>Uploaded Resumes</h2>
-        {% if resumes %}
-            <ul>
-                {% for r in resumes %}
-                    <li>{{ r[2] }} - {{ r[3] }}</li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No resumes uploaded yet.</p>
-        {% endif %}
-        <p><a href="/home">Back to Home</a></p>
+{% extends "base.html" %}
+
+{% block title %}My Resumes - Career Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-2 p-0">
+            <div class="sidebar">
+                <div class="p-4 text-center border-bottom border-light border-opacity-25">
+                    <i class="fas fa-briefcase fa-2x mb-2"></i>
+                    <h5>Career Hub</h5>
+                </div>
+                <nav class="nav flex-column p-3">
+                    <a class="nav-link" href="{{ url_for('dashboard') }}">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                    <a class="nav-link" href="{{ url_for('upload_resume_page') }}">
+                        <i class="fas fa-upload me-2"></i>Upload Resume
+                    </a>
+                    <a class="nav-link active" href="{{ url_for('list_resumes') }}">
+                        <i class="fas fa-file-alt me-2"></i>My Resumes
+                    </a>
+                    <a class="nav-link" href="{{ url_for('interview') }}">
+                        <i class="fas fa-comments me-2"></i>Mock Interview
+                    </a>
+                    <a class="nav-link" href="{{ url_for('interview_history') }}">
+                        <i class="fas fa-history me-2"></i>Interview History
+                    </a>
+                    <a class="nav-link" href="{{ url_for('job_tracker') }}">
+                        <i class="fas fa-briefcase me-2"></i>Job Tracker
+                    </a>
+                    <a class="nav-link" href="{{ url_for('roadmaps') }}">
+                        <i class="fas fa-map me-2"></i>Career Roadmap
+                    </a>
+                    <a class="nav-link" href="{{ url_for('profile_page') }}">
+                        <i class="fas fa-user-cog me-2"></i>Profile
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-10">
+            <div class="p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h2">My Resumes</h1>
+                    <a href="{{ url_for('upload_resume_page') }}" class="btn btn-custom">
+                        <i class="fas fa-plus me-2"></i>Upload New Resume
+                    </a>
+                </div>
+
+                {% if resumes %}
+                    <div class="row">
+                        {% for resume in resumes %}
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card card-custom h-100">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0 text-truncate">{{ resume[3] }}</h6>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            {% if resume[7] == 'completed' %}
+                                            <li><a class="dropdown-item" href="{{ url_for('resume_analysis', resume_id=resume[0]) }}">
+                                                <i class="fas fa-chart-bar me-2"></i>View Analysis
+                                            </a></li>
+                                            <li><a class="dropdown-item" href="{{ url_for('improve_resume', resume_id=resume[0]) }}">
+                                                <i class="fas fa-magic me-2"></i>Improve Resume
+                                            </a></li>
+                                            {% endif %}
+                                            <li><a class="dropdown-item" href="{{ url_for('download_resume', resume_id=resume[0]) }}">
+                                                <i class="fas fa-download me-2"></i>Download
+                                            </a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <form method="POST" action="{{ url_for('delete_resume_route', resume_id=resume[0]) }}" class="d-inline">
+                                                    <button class="dropdown-item text-danger" onclick="return confirm('Are you sure you want to delete this resume?')">
+                                                        <i class="fas fa-trash me-2"></i>Delete
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <span class="badge bg-primary">{{ resume[4] or 'General' }}</span>
+                                        <span class="badge bg-{{ 'success' if resume[7] == 'completed' else 'warning' if resume[7] == 'analyzing' else 'secondary' }}">
+                                            {{ resume[7] or 'Pending' }}
+                                        </span>
+                                    </div>
+                                    
+                                    {% if resume[8] and resume[9] %}
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <small>Analysis Score</small>
+                                            <small>{{ resume[8] }}/100</small>
+                                        </div>
+                                        <div class="progress progress-custom" style="height: 8px;">
+                                            <div class="progress-bar progress-bar-custom" style="width: {{ resume[8] }}%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <small>ATS Score</small>
+                                            <small>{{ resume[9] }}/100</small>
+                                        </div>
+                                        <div class="progress progress-custom" style="height: 8px;">
+                                            <div class="progress-bar bg-info" style="width: {{ resume[9] }}%"></div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="text-muted small">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        Uploaded: {{ resume[6] }}
+                                    </div>
+                                    <div class="text-muted small">
+                                        <i class="fas fa-file me-1"></i>
+                                        Size: {{ "%.1f"|format(resume[5]/1024/1024) }} MB
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    {% if resume[7] == 'completed' %}
+                                        <a href="{{ url_for('resume_analysis', resume_id=resume[0]) }}" class="btn btn-outline-primary btn-sm w-100">
+                                            <i class="fas fa-eye me-2"></i>View Analysis
+                                        </a>
+                                    {% elif resume[7] == 'analyzing' %}
+                                        <button class="btn btn-outline-warning btn-sm w-100" disabled>
+                                            <div class="spinner-border spinner-border-sm me-2" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            Analyzing...
+                                        </button>
+                                    {% else %}
+                                        <button class="btn btn-outline-secondary btn-sm w-100" disabled>
+                                            <i class="fas fa-clock me-2"></i>Pending Analysis
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-file-alt fa-5x text-muted mb-4"></i>
+                        <h4 class="text-muted">No resumes uploaded yet</h4>
+                        <p class="text-muted">Upload your first resume to get started with AI-powered analysis</p>
+                        <a href="{{ url_for('upload_resume_page') }}" class="btn btn-custom">
+                            <i class="fas fa-upload me-2"></i>Upload Your First Resume
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

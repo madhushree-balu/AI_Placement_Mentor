@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Career Roadmaps - Career Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-2 p-0">
+            <div class="sidebar">
+                <div class="p-4 text-center border-bottom border-light border-opacity-25">
+                    <i class="fas fa-briefcase fa-2x mb-2"></i>
+                    <h5>Career Hub</h5>
+                </div>
+                <nav class="nav flex-column p-3">
+                    <a class="nav-link" href="{{ url_for('dashboard') }}">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                    <a class="nav-link" href="{{ url_for('upload_resume_page') }}">
+                        <i class="fas fa-upload me-2"></i>Upload Resume
+                    </a>
+                    <a class="nav-link" href="{{ url_for('list_resumes') }}">
+                        <i class="fas fa-file-alt me-2"></i>My Resumes
+                    </a>
+                    <a class="nav-link" href="{{ url_for('interview') }}">
+                        <i class="fas fa-comments me-2"></i>Mock Interview
+                    </a>
+                    <a class="nav-link" href="{{ url_for('interview_history') }}">
+                        <i class="fas fa-history me-2"></i>Interview History
+                    </a>
+                    <a class="nav-link" href="{{ url_for('job_tracker') }}">
+                        <i class="fas fa-briefcase me-2"></i>Job Tracker
+                    </a>
+                    <a class="nav-link active" href="{{ url_for('roadmaps') }}">
+                        <i class="fas fa-map me-2"></i>Career Roadmap
+                    </a>
+                    <a class="nav-link" href="{{ url_for('profile_page') }}">
+                        <i class="fas fa-user-cog me-2"></i>Profile
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-10">
+            <div class="p-4">
+                <h1 class="h2 mb-4">AI-Powered Career Roadmaps</h1>
+
+                {% if error %}
+                    <div class="alert alert-danger alert-custom">
+                        <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
+                    </div>
+                {% endif %}
+
+                {% if success %}
+                    <div class="alert alert-success alert-custom">
+                        <i class="fas fa-check-circle me-2"></i>{{ success }}
+                    </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-lg-8">
+                        {% if roadmap %}
+                            <div class="card card-custom mb-4">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0"><i class="fas fa-route me-2"></i>Your Personalized Roadmap</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <strong>Goal:</strong> {{ description }}
+                                    </div>
+                                    <div class="roadmap-content">
+                                        <pre style="white-space: pre-wrap; background: #f8f9fa; padding: 20px; border-radius: 10px; font-family: monospace;">{{ roadmap }}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="card card-custom">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0"><i class="fas fa-magic me-2"></i>Generate Your Career Roadmap</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form method="POST">
+                                        <div class="mb-4">
+                                            <label for="description" class="form-label">Describe your career goal or learning objective</label>
+                                            <textarea class="form-control form-control-custom" id="description" 
+                                                      name="description" rows="5" required
+                                                      placeholder="Example: I want to become a full-stack developer with expertise in React and Node.js, starting from a beginner level"></textarea>
+                                            <div class="form-text">
+                                                Be as specific as possible. Include your current level, target role, technologies you're interested in, and timeline if you have one.
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-custom w-100">
+                                            <i class="fas fa-rocket me-2"></i>Generate AI Roadmap
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card card-custom mb-4">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Roadmap Examples</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <h6>Software Development</h6>
+                                    <button class="btn btn-sm btn-outline-primary w-100" onclick="fillExample('Become a full-stack JavaScript developer in 12 months, starting from basic HTML/CSS knowledge')">
+                                        Use This Example
+                                    </button>
+                                </div>
+                                <div class="mb-3">
+                                    <h6>Data Science</h6>
+                                    <button class="btn btn-sm btn-outline-primary w-100" onclick="fillExample('Transition to data scientist role from business analyst background, focus on Python and machine learning')">
+                                        Use This Example
+                                    </button>
+                                </div>
+                                <div class="mb-3">
+                                    <h6>Product Management</h6>
+                                    <button class="btn btn-sm btn-outline-primary w-100" onclick="fillExample('Move from software engineering to product management, need to learn user research and business strategy')">
+                                        Use This Example
+                                    </button>
+                                </div>
+                                <div class="mb-3">
+                                    <h6>Digital Marketing</h6>
+                                    <button class="btn btn-sm btn-outline-primary w-100" onclick="fillExample('Career change to digital marketing, interested in SEO, PPC, and content marketing')">
+                                        Use This Example
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card card-custom">
+                            <div class="card-header bg-secondary text-white">
+                                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>How It Works</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 30px; height: 30px;">1</div>
+                                        <span>Describe your career goal</span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 30px; height: 30px;">2</div>
+                                        <span>AI analyzes requirements</span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 30px; height: 30px;">3</div>
+                                        <span>Get personalized pathway</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 30px; height: 30px;">4</div>
+                                        <span>Follow step-by-step plan</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function fillExample(text) {
+    document.getElementById('description').value = text;
+}
+</script>
+{% endblock %}
